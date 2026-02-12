@@ -123,10 +123,12 @@ export class ToolHandler {
     // Generate filename
     let filename: string;
     if (customFilename) {
-      // Use custom filename, ensure .md extension
-      filename = customFilename.endsWith(".md")
-        ? customFilename
-        : `${customFilename}.md`;
+      // Sanitize filename to prevent Path Traversal
+      const sanitized = path.basename(customFilename);
+      // Use sanitized filename, ensure .md extension
+      filename = sanitized.endsWith(".md")
+        ? sanitized
+        : `${sanitized}.md`;
     } else {
       // Auto-generate from query and timestamp
       const timestamp = new Date()
@@ -147,6 +149,65 @@ export class ToolHandler {
     fs.writeFileSync(filePath, markdown, "utf-8");
 
     return filePath;
+  }
+
+  /**
+   * Handle clear_browser_profile tool call
+   */
+  async handleClearProfile(sendProgress: ProgressCallback): Promise<any> {
+    try {
+      log.info("🧹 Tool call: clear_browser_profile");
+      
+      // 1. Close search handler (which closes the current browser context)
+      await sendProgress("Terminating active browser sessions...");
+      await this.searchHandler.cleanup();
+
+      // 2. Cooldown to allow OS to release file locks
+      await new Promise(resolve => setTimeout(resolve, 2000));
+
+      // 3. Wipe browser profile data
+      await sendProgress("Wiping browser profile data...");
+      
+      const profileDir = CONFIG.browserProfileDir;
+      if (fs.existsSync(profileDir)) {
+        try {
+          // Recursive deletion of profile directory
+          // Using force:true to ignore non-existent files and handle read-only files
+          fs.rmSync(profileDir, { recursive: true, force: true });
+          
+          // Triple-check: if still exists, it might be a permission/lock issue
+          if (fs.existsSync(profileDir)) {
+            log.warning(`⚠️ Profile directory still exists at: ${profileDir} - attempting second pass`);
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            fs.rmSync(profileDir, { recursive: true, force: true });
+          }
+
+          log.success(`✅ Profile cleared at: ${profileDir}`);
+        } catch (rmError) {
+          log.error(`Deletion failed: ${rmError}`);
+          // On Windows, if process is still locked, we might need to inform the user
+          if (process.platform === 'win32') {
+             throw new Error(`Could not delete profile directory. It may be locked by another process. Please close all Chrome/Chromium windows and try again.`);
+          }
+          throw rmError;
+        }
+      } else {
+        log.info("Profile directory already empty or not found.");
+      }
+
+      await sendProgress("Profile cleared successfully!", 100, 100);
+
+      return {
+        success: true,
+        message: "Browser profile cleared successfully. Local history, sessions, and cookies have been removed.",
+      };
+    } catch (error) {
+      log.error(`Clear profile error: ${error}`);
+      return {
+        success: false,
+        error: error instanceof Error ? error.message : String(error),
+      };
+    }
   }
 
   /**
