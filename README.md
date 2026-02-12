@@ -237,9 +237,12 @@ If Google keeps showing CAPTCHAs:
 - Add 10-30 second delays between searches
 - The server automatically restarts after 3 consecutive CAPTCHAs
 
-**Browser won't launch:**
+**Browser won't launch or persistent issues:**
 
-Clear the browser profile:
+The easiest way to fix browser-level issues or log out of Google is to use the built-in tool:
+- Tell your agent: "Clear my browser profile" or run the `clear_browser_profile` tool.
+
+Manual fallback:
 ```bash
 # Linux/macOS
 rm -rf ~/.local/share/google-ai-mode-mcp/chrome_profile
@@ -250,7 +253,7 @@ rmdir /s "%LOCALAPPDATA%\google-ai-mode-mcp\chrome_profile"
 
 **Wrong language results:**
 
-The server forces English results. If you still get wrong languages, clear the profile (see above).
+The server forces English results. If you still get wrong languages, use the `clear_browser_profile` tool.
 
 **Missing citations:**
 

@@ -32,7 +32,7 @@ import {
 } from "@modelcontextprotocol/sdk/types.js";
 
 import { ToolHandler } from "./tools/tool-handler.js";
-import { SEARCH_AI_TOOL } from "./tools/search-tool.js";
+import { SEARCH_AI_TOOL, CLEAR_PROFILE_TOOL } from "./tools/search-tool.js";
 import {
   GOOGLE_AI_SEARCH_PROMPT,
   GOOGLE_AI_SEARCH_PROMPT_TEMPLATE,
@@ -85,7 +85,7 @@ class GoogleAiSearchMCPServer {
     this.server.setRequestHandler(ListToolsRequestSchema, async () => {
       log.info("📋 [MCP] list_tools request received");
       return {
-        tools: [SEARCH_AI_TOOL],
+        tools: [SEARCH_AI_TOOL, CLEAR_PROFILE_TOOL],
       };
     });
 
@@ -128,6 +128,10 @@ class GoogleAiSearchMCPServer {
               args as { query: string; headless?: boolean; timeout_ms?: number },
               sendProgress
             );
+            break;
+
+          case "clear_browser_profile":
+            result = await this.toolHandler.handleClearProfile(sendProgress);
             break;
 
           default:

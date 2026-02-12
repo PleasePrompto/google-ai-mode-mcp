@@ -50,3 +50,13 @@ Note: If CAPTCHA is detected, you will be prompted to solve it in a visible brow
     required: ["query"],
   },
 };
+
+export const CLEAR_PROFILE_TOOL: Tool = {
+  name: "clear_browser_profile",
+  description: "Clears the browser profile (cookies, session, cache). Useful for resetting Google login or fixing persistent issues.",
+  inputSchema: {
+    type: "object",
+    properties: {},
+  },
+};
+

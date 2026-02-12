@@ -77,7 +77,7 @@ export class SearchHandler {
         // Navigate to Google AI Search
         log.info("🌐 Navigating to Google AI Search...");
         await page.goto(searchUrl, {
-          waitUntil: "domcontentloaded",
+          waitUntil: "networkidle", // Wait for network to be idle to captures redirects/AJAX correctly
           timeout: CONFIG.browserTimeout,
         });
 
