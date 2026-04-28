@@ -1,3 +1,5 @@
+[![MseeP.ai Security Assessment Badge](https://mseep.net/pr/pleaseprompto-google-ai-mode-mcp-badge.png)](https://mseep.ai/app/pleaseprompto-google-ai-mode-mcp)
+
 <div align="center">
 
 # Google AI Mode MCP Server
