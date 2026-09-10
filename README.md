@@ -1,3 +1,6 @@
+> [!WARNING]
+> **This project is no longer maintained.** As of September 2026 the repository is archived: no updates, bug fixes or support. The npm package will not receive further releases. It may stop working when the upstream services change. Feel free to fork.
+
 <div align="center">
 
 # Google AI Mode MCP Server
